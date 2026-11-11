@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRUYỀN THÔNG QUẢNG TRỊ</title>
+<meta name="description" content="TRUYỀN THÔNG QUẢNG TRỊ">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* --- Nền & chữ --- */
+    --bg:        #f7fafc;
+    --surface:   #ffffff;
+    --surface2:  #f1f5f9;
+    --border:    #e2e8f0;
+    --text:      #0f172a;
+    --text2:     #334155;
+    --muted:     #64748b;
+
+    /* --- Màu chủ đạo: xanh ngọc -> xanh dương --- */
+    --c1:        #14b8a6;
+    --c2:        #0ea5e9;
+    --c3:        #3b82f6;
+    --c1-lo:     rgba(20,184,166,.10);
+    --c2-lo:     rgba(14,165,233,.10);
+    --grad:      linear-gradient(135deg, #14b8a6 0%, #0ea5e9 55%, #3b82f6 100%);
+
+    /* --- Huy chương: giữ vàng/bạc/đồng vì đây là ngôn ngữ của thành tích --- */
+    --gold:      #f59e0b;
+    --silver:    #94a3b8;
+    --bronze:    #b45309;
+
+    /* --- Bóng đổ mềm nhiều lớp thay cho viền cứng --- */
+    --sh-sm:     0 1px 2px rgba(15,23,42,.04), 0 2px 8px rgba(15,23,42,.05);
+    --sh-md:     0 2px 4px rgba(15,23,42,.04), 0 10px 26px rgba(15,23,42,.08);
+    --sh-lg:     0 4px 8px rgba(15,23,42,.05), 0 18px 44px rgba(15,23,42,.13);
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    /* Vệt sáng xanh rất nhạt ở đỉnh trang cho đỡ phẳng */
+    background-image:
+      radial-gradient(760px 300px at 15% -140px, rgba(20,184,166,.14), transparent 70%),
+      radial-gradient(760px 300px at 85% -160px, rgba(59,130,246,.13), transparent 70%);
+    background-repeat: no-repeat;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 72px; }
+
+  /* ---------- HEADER ---------- */
+  .lp-header { text-align: center; padding: 54px 0 34px; }
+  .lp-logo { font-size: 2.6rem; line-height: 1; margin-bottom: 12px; }
+  .lp-title {
+    font-size: clamp(1.6rem, 4.4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -.025em;
+    line-height: 1.18;
+    /* Chữ tô gradient; trình duyệt cũ không hỗ trợ sẽ hiện màu --text bình thường */
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--text);
+    display: inline-block;
+    padding-bottom: 2px;
+  }
+  .lp-sub { color: var(--muted); margin-top: 6px; font-size: 1.02rem; }
+  .lp-meta {
+    display: flex; justify-content: center; align-items: center;
+    gap: 12px; flex-wrap: wrap; margin-top: 20px;
+  }
+  .lp-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--surface);
+    box-shadow: var(--sh-sm);
+    border: 1px solid var(--border);
+    color: var(--c2);
+    border-radius: 999px;
+    padding: 7px 17px;
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .lp-updated { color: var(--muted); font-size: .78rem; }
+
+  /* ---------- THẺ SỐ LIỆU TỔNG ---------- */
+  .lp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 42px;
+  }
+  .stat {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 20px 22px;
+    box-shadow: var(--sh-sm);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 4px;
+    background: var(--border);
+  }
+  .stat.hl::before { background: var(--grad); }
+  .stat .lbl {
+    color: var(--muted);
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font-weight: 700;
+  }
+  .stat .val {
+    font-size: 2rem; font-weight: 800; margin-top: 4px;
+    letter-spacing: -.03em; line-height: 1.15;
+  }
+  .stat.hl .val {
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--c2);
+  }
+
+  /* ---------- TIÊU ĐỀ MỤC ---------- */
+  .lp-section-title {
+    font-size: 1.08rem; font-weight: 800;
+    margin: 0 0 18px;
+    display: flex; align-items: center; gap: 10px;
+    letter-spacing: -.01em;
+  }
+  .lp-section-title::after {
+    content: ''; flex: 1; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ---------- BỤC VINH DANH (có ảnh nền địa phương hạng nhất) ---------- */
+  .podium-hero {
+    position: relative;
+    border-radius: 26px;
+    overflow: hidden;
+    padding: 46px 24px 42px;
+    margin-bottom: 46px;
+    /* Nền mặc định khi CHƯA có ảnh — vẫn là một "sân khấu" có màu */
+    background: var(--grad);
+    box-shadow: var(--sh-lg);
+    isolation: isolate;
+  }
+  /* Lớp ảnh: chỉ hiện khi đã tải được ảnh (JS thêm class .has-img) */
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(1px) saturate(1.12);
+    transform: scale(1.06);           /* che mép nhoè do blur */
+    opacity: 0;
+    transition: opacity .5s ease-out;
+    z-index: -2;
+  }
+  .podium-hero.has-img .hero-bg { opacity: 1; }
+  /* Lớp phủ giúp chữ luôn đọc được dù ảnh sáng hay tối */
+  .hero-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,47,73,.26) 0%, rgba(15,23,42,.34) 45%, rgba(15,23,42,.52) 100%);
+    opacity: 0;
+    transition: opacity .5s ease-out;
+    z-index: -1;
+  }
+  .podium-hero.has-img .hero-scrim { opacity: 1; }
+
+  .hero-credit {
+    position: absolute; right: 16px; bottom: 12px;
+    color: rgba(255,255,255,.92);
+    font-size: .72rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,.5);
+    letter-spacing: .01em;
+  }
+
+  .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: end; }
+  .pod {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 22px 16px 20px;
+    text-align: center;
+    box-shadow: var(--sh-md);
+    position: relative;
+  }
+  /* Màn hình rộng: xếp 2 - 1 - 3 để hạng nhất nằm giữa và nhô cao hơn */
+  .pod-1 { order: 2; }
+  .pod-2 { order: 1; }
+  .pod-3 { order: 3; }
+  .pod-1 {
+    padding: 32px 18px 28px;
+    box-shadow: var(--sh-lg), 0 0 0 3px rgba(245,158,11,.55);
+  }
+  .pod .medal { font-size: 2rem; line-height: 1; }
+  .pod-1 .medal { font-size: 2.7rem; }
+  .pod .nm {
+    font-weight: 700; margin: 10px 0 10px;
+    font-size: .96rem; line-height: 1.35;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .pod-1 .nm { font-size: 1.16rem; font-weight: 800; }
+  .pod .vl {
+    font-size: 1.6rem; font-weight: 800;
+    letter-spacing: -.03em; color: var(--text);
+  }
+  .pod-1 .vl { font-size: 2.1rem; color: var(--gold); }
+  .pod .unit {
+    color: var(--muted); font-size: .7rem; margin-top: 2px;
+    text-transform: uppercase; letter-spacing: .05em; font-weight: 600;
+  }
+
+  /* ---------- BIỂU ĐỒ CỘT NGANG (CSS thuần, không thư viện) ---------- */
+  .chart { margin-bottom: 46px; }
+  .chart-box {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 12px 22px;
+    box-shadow: var(--sh-sm);
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    padding: 10px 0;
+  }
+  .bar-row + .bar-row { border-top: 1px solid var(--surface2); }
+  .bar-rank { color: var(--muted); font-size: .82rem; font-weight: 800; text-align: right; }
+  .bar-main { min-width: 0; }
+  .bar-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+  .bar-name { font-size: .88rem; color: var(--text2); overflow-wrap: anywhere; }
+  .bar-val { font-size: .88rem; font-weight: 800; color: var(--c2); white-space: nowrap; }
+  .bar-track { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+  .bar-fill {
+    height: 100%;
+    background: var(--grad);
+    border-radius: 999px;
+    min-width: 4px;
+    transition: width .6s cubic-bezier(.22,.8,.3,1);
+  }
+
+  /* ---------- BẢNG XẾP HẠNG ---------- */
+  .tbl-toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 14px;
+  }
+  .search-box { position: relative; flex: 1 1 240px; }
+  .search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 11px 14px 11px 38px;
+    font-size: .9rem;
+    font-family: inherit;
+    box-shadow: var(--sh-sm);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--c2);
+    box-shadow: 0 0 0 4px var(--c2-lo);
+  }
+  .search-box::before {
+    content: '🔍'; position: absolute; left: 13px; top: 50%;
+    transform: translateY(-50%); font-size: .85rem; opacity: .55;
+  }
+  .tbl-toolbar select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 11px 14px;
+    font-size: .9rem;
+    font-family: inherit;
+    box-shadow: var(--sh-sm);
+    cursor: pointer;
+  }
+  .tbl-toolbar select:focus {
+    outline: none; border-color: var(--c2);
+    box-shadow: 0 0 0 4px var(--c2-lo);
+  }
+  .tbl-count { color: var(--muted); font-size: .82rem; margin-left: auto; }
+
+  .tbl-wrap {
+    background: var(--surface);
+    border-radius: 18px;
+    overflow-x: auto;
+    box-shadow: var(--sh-md);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead th {
+    text-align: left;
+    color: var(--muted);
+    font-size: .68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    background: var(--surface);
+    position: sticky; top: 0; z-index: 1;
+  }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--surface2); color: var(--text2); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .12s; }
+  tbody tr:hover { background: var(--c1-lo); }
+
+  .col-rank { width: 58px; }
+  .rank-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 26px; height: 26px; padding: 0 7px;
+    border-radius: 999px;
+    font-size: .78rem; font-weight: 800;
+    background: var(--surface2); color: var(--muted);
+  }
+  tr.top-1 .rank-pill { background: var(--gold);   color: #fff; }
+  tr.top-2 .rank-pill { background: var(--silver); color: #fff; }
+  tr.top-3 .rank-pill { background: var(--bronze); color: #fff; }
+  tr.top-1, tr.top-2, tr.top-3 { background: linear-gradient(90deg, rgba(245,158,11,.07), transparent 60%); }
+
+  .col-name { font-weight: 700; color: var(--text); overflow-wrap: anywhere; min-width: 180px; }
+  .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .num-main { font-weight: 800; color: var(--c2); }
+  .num-dim { color: var(--muted); }
+  .no-result { text-align: center; color: var(--muted); padding: 40px 16px; }
+
+  /* ---------- TRẠNG THÁI TẢI / LỖI / KÉO-THẢ ---------- */
+  .state { text-align: center; padding: 60px 20px; }
+  .state h2 { font-size: 1.2rem; margin-bottom: 10px; font-weight: 800; }
+  .state p { color: var(--muted); font-size: .92rem; max-width: 580px; margin: 0 auto 8px; }
+  .state code {
+    background: var(--surface2); padding: 2px 7px; border-radius: 6px;
+    font-size: .86em; color: var(--c2); font-weight: 600;
+  }
+  .dropzone {
+    margin: 24px auto 0;
+    max-width: 470px;
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: 18px;
+    padding: 32px 20px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .15s;
+  }
+  .dropzone:hover, .dropzone.over {
+    border-color: var(--c1);
+    background: var(--c1-lo);
+    transform: translateY(-2px);
+  }
+  .dropzone .dz-icon { font-size: 2rem; }
+  .dropzone .dz-main { font-weight: 700; margin-top: 8px; }
+  .dropzone .dz-hint { color: var(--muted); font-size: .82rem; margin-top: 4px; }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: .78rem;
+    padding-top: 36px;
+    margin-top: 46px;
+    border-top: 1px solid var(--border);
+    line-height: 1.75;
+  }
+  .btn-print {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: .82rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 14px;
+    box-shadow: var(--sh-sm);
+    transition: color .15s, border-color .15s, transform .15s;
+  }
+  .btn-print:hover { color: var(--c2); border-color: var(--c2); transform: translateY(-1px); }
+
+  [hidden] { display: none !important; }
+
+  /* ---------- ĐIỆN THOẠI ---------- */
+  @media (max-width: 640px) {
+    .wrap { padding: 0 14px 52px; }
+    .lp-header { padding: 34px 0 26px; }
+    .podium-hero { padding: 92px 14px 22px; border-radius: 20px; }
+    /* Bục xếp dọc: trả lại thứ tự 1 - 2 - 3 cho dễ đọc trên màn hình hẹp */
+    .podium { grid-template-columns: 1fr; gap: 12px; }
+    .pod-1, .pod-2, .pod-3 { order: 0; }
+    .pod-1 { padding: 24px 16px 22px; }
+    /* Khối bục lúc này rất cao và hẹp; nếu để ảnh phủ kín thì ảnh ngang bị cắt
+       thành một dải dọc rất xấu -> giới hạn ảnh thành băng ngang phía trên. */
+    .hero-bg { bottom: auto; height: 215px; }
+    .hero-scrim { background: linear-gradient(180deg, rgba(8,47,73,.22) 0%, rgba(8,47,73,.30) 92px, rgba(13,148,136,.88) 215px, rgba(59,130,246,.93) 100%); }
+    .hero-credit { position: static; display: block; text-align: right; margin-top: 12px; }
+    .stat .val { font-size: 1.7rem; }
+    .chart-box { padding: 8px 16px; }
+    thead th, tbody td { padding: 11px 12px; }
+    .col-hide-sm { display: none; }
+  }
+
+  /* ---------- BẢN IN / LƯU PDF ---------- */
+  @media print {
+    body { background: #fff; background-image: none; font-size: 11pt; }
+    .wrap { max-width: none; padding: 0; }
+    .tbl-toolbar, .btn-print, .dropzone { display: none !important; }
+    /* Ảnh nền in ra rất tốn mực và làm mờ chữ -> bỏ hẳn khi in */
+    .hero-bg, .hero-scrim, .hero-credit { display: none !important; }
+    .podium-hero { background: #fff !important; box-shadow: none; padding: 0; border: 1px solid #cbd5e1; padding: 16px; }
+    .pod-1, .pod-2, .pod-3 { order: 0; }
+    .stat, .pod, .tbl-wrap, .chart-box { break-inside: avoid; box-shadow: none; border: 1px solid #cbd5e1; }
+    .pod-1 { box-shadow: none; border: 2px solid var(--gold); }
+    /* Chữ tô gradient in ra bị mất -> trả về màu đặc */
+    .lp-title, .stat.hl .val {
+      -webkit-text-fill-color: #0f172a; color: #0f172a; background: none;
+    }
+    .bar-fill { background: #94a3b8 !important; }
+    tr.top-1, tr.top-2, tr.top-3 { background: #fff !important; }
+    thead th { position: static; }
+    a[href]::after { content: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Dữ liệu nhúng sẵn: CHỈ dùng cho bản xem thử sinh từ dashboard.
+     Bản tải về để publish có khối này RỖNG -> trang sẽ đọc file data.csv. -->
+<script id="embedded-csv" type="text/plain">__EMBEDDED_CSV__</script>
+
+<div class="wrap">
+
+  <header class="lp-header">
+    <div class="lp-logo">🏆</div>
+    <h1 class="lp-title">TRUYỀN THÔNG QUẢNG TRỊ</h1>
+    <div class="lp-sub" id="lp-sub">KẾT QUẢ XẾP HẠNG</div>
+    <div class="lp-meta" id="lp-meta" hidden>
+      <span class="lp-badge" id="lp-range"></span>
+      <span class="lp-updated" id="lp-updated"></span>
+    </div>
+  </header>
+
+  <!-- Trạng thái: đang tải -->
+  <div class="state" id="state-loading">
+    <h2>Đang tải số liệu…</h2>
+  </div>
+
+  <!-- Trạng thái: không đọc được data.csv -->
+  <div class="state" id="state-error" hidden>
+    <h2 id="err-title">Chưa có số liệu</h2>
+    <p id="err-msg"></p>
+    <div class="dropzone" id="dropzone">
+      <div class="dz-icon">📁</div>
+      <div class="dz-main">Bấm để chọn, hoặc kéo-thả file CSV vào đây</div>
+      <div class="dz-hint">Dùng để xem thử trên máy trước khi công bố</div>
+    </div>
+    <input type="file" id="file-input" accept=".csv,text/csv,text/plain" hidden>
+  </div>
+
+  <!-- Nội dung chính -->
+  <main id="content" hidden>
+
+    <section class="lp-stats" id="stats"></section>
+
+    <section id="podium-wrap">
+      <h2 class="lp-section-title">🏅 Tốp đầu</h2>
+      <div class="podium-hero" id="podium-hero">
+        <div class="hero-bg" id="hero-bg"></div>
+        <div class="hero-scrim"></div>
+        <div class="podium" id="podium"></div>
+        <div class="hero-credit" id="hero-credit" hidden></div>
+      </div>
+    </section>
+
+    <section class="chart" id="chart-wrap">
+      <h2 class="lp-section-title" id="chart-title">📊 Tốp 10</h2>
+      <div class="chart-box"><div id="chart"></div></div>
+    </section>
+
+    <section>
+      <h2 class="lp-section-title">📋 Bảng xếp hạng đầy đủ</h2>
+      <div class="tbl-toolbar">
+        <div class="search-box">
+          <input type="search" id="q" placeholder="Tìm tên đơn vị / chiến dịch…" autocomplete="off">
+        </div>
+        <select id="sort"></select>
+        <span class="tbl-count" id="count"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr id="thead-row"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <div id="foot-note"></div>
+      <button class="btn-print" id="btn-print">🖨 In / Lưu PDF</button>
+    </footer>
+
+  </main>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // =========================================================================
+  // 1. ĐỌC CSV
+  // =========================================================================
+
+  // Parser CSV đầy đủ: xử lý ô bọc nháy kép, dấu phẩy trong ô, nháy escape ("")
+  // và cả xuống dòng CRLF lẫn LF.
+  function parseCsv(text) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // bỏ BOM UTF-8
+    var rows = [], row = [], cell = '', inQuote = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (inQuote) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') { cell += '"'; i++; }
+          else inQuote = false;
+        } else cell += ch;
+      } else if (ch === '"') {
+        inQuote = true;
+      } else if (ch === ',') {
+        row.push(cell); cell = '';
+      } else if (ch === '\n') {
+        row.push(cell); cell = ''; rows.push(row); row = [];
+      } else if (ch !== '\r') {
+        cell += ch;
+      }
+    }
+    if (cell !== '' || row.length > 0) { row.push(cell); rows.push(row); }
+    // Bỏ các dòng rỗng hoàn toàn
+    return rows.filter(function (r) {
+      return r.some(function (c) { return String(c).trim() !== ''; });
+    });
+  }
+
+  // Bỏ dấu tiếng Việt + hạ chữ thường, để so khớp không phụ thuộc dấu.
+  // Dùng vòng lặp mã ký tự thay vì regex dải Unicode cho chắc chắn: các ký tự
+  // tổ hợp dấu (U+0300..U+036F) là ký tự VÔ HÌNH trong mã nguồn, rất dễ bị
+  // trình soạn thảo làm hỏng nếu viết thẳng vào regex.
+  function norm(s) {
+    var d = String(s == null ? '' : s).normalize('NFD');
+    var out = '';
+    for (var i = 0; i < d.length; i++) {
+      var code = d.charCodeAt(i);
+      if (code >= 0x300 && code <= 0x36f) continue; // bỏ dấu thanh/dấu mũ
+      out += d[i];
+    }
+    return out.replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
+  }
+
+  // "Quảng Ninh" -> "quang-ninh"  (dùng để đoán tên file ảnh)
+  function slugName(s) {
+    return norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+  }
+
+  function toNum(v) {
+    var n = parseInt(String(v).replace(/[^\d-]/g, ''), 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  // Nhận diện cột theo tiêu đề. Hỗ trợ CẢ 2 định dạng:
+  //   - Mới (9 cột): Thứ hạng | Tên chiến dịch | Tăng trong kỳ | Lũy kế cuối kỳ | …
+  //   - Cũ  (3 cột): Tên chiến dịch | Chỉ số xếp hạng | Thứ tự sắp xếp
+  function mapColumns(header) {
+    var idx = { name: -1, delta: -1, total: -1, start: -1, links: -1, days: -1, from: -1, to: -1, rank: -1 };
+    header.forEach(function (h, i) {
+      var n = norm(h);
+      if (idx.name  < 0 && (n.indexOf('ten chien dich') >= 0 || n.indexOf('ten don vi') >= 0 || n === 'ten')) idx.name = i;
+      else if (idx.delta < 0 && n.indexOf('tang trong ky') >= 0) idx.delta = i;
+      else if (idx.total < 0 && n.indexOf('luy ke') >= 0) idx.total = i;
+      else if (idx.start < 0 && n.indexOf('dau ky') >= 0) idx.start = i;
+      else if (idx.links < 0 && n.indexOf('so link') >= 0) idx.links = i;
+      else if (idx.days  < 0 && n.indexOf('so ngay') >= 0) idx.days = i;
+      else if (idx.from  < 0 && n.indexOf('tu ngay') >= 0) idx.from = i;
+      else if (idx.to    < 0 && n.indexOf('den ngay') >= 0) idx.to = i;
+      else if (idx.rank  < 0 && n.indexOf('thu hang') >= 0) idx.rank = i;
+      // Định dạng CŨ: "Chỉ số xếp hạng" chính là số lượt xem dùng để xếp hạng
+      else if (idx.delta < 0 && n.indexOf('chi so xep hang') >= 0) idx.delta = i;
+    });
+    return idx;
+  }
+
+  var MODE_RANGE = 'range';   // CSV mới: có "Tăng trong kỳ" + "Lũy kế cuối kỳ"
+  var MODE_SIMPLE = 'simple'; // CSV cũ: chỉ có 1 chỉ số
+
+  function buildData(rows) {
+    if (rows.length < 2) throw new Error('File CSV không có dòng dữ liệu nào.');
+
+    var idx = mapColumns(rows[0]);
+    if (idx.name < 0 || idx.delta < 0) {
+      throw new Error('Không nhận ra định dạng file. Cần có cột "Tên chiến dịch" và cột chỉ số ("Tăng trong kỳ" hoặc "Chỉ số xếp hạng").');
+    }
+
+    var mode = idx.total >= 0 ? MODE_RANGE : MODE_SIMPLE;
+
+    var items = rows.slice(1).map(function (r) {
+      return {
+        name:  String(r[idx.name] || '').trim() || '(không tên)',
+        value: toNum(r[idx.delta]),
+        total: idx.total >= 0 ? toNum(r[idx.total]) : null,
+        start: idx.start >= 0 ? toNum(r[idx.start]) : null,
+        links: idx.links >= 0 ? toNum(r[idx.links]) : null,
+        days:  idx.days  >= 0 ? toNum(r[idx.days])  : null
+      };
+    }).filter(function (x) { return x.name !== '(không tên)' || x.value > 0; });
+
+    if (items.length === 0) throw new Error('File CSV không có dòng dữ liệu hợp lệ.');
+
+    var first = rows[1] || [];
+    return {
+      mode: mode,
+      items: items,
+      from: idx.from >= 0 ? String(first[idx.from] || '').trim() : '',
+      to:   idx.to   >= 0 ? String(first[idx.to]   || '').trim() : ''
+    };
+  }
+
+  // =========================================================================
+  // 2. ẢNH NỀN BỤC VINH DANH
+  // =========================================================================
+
+  var IMG_DIR = 'assets/';
+  var DEFAULT_KEY = '__mac_dinh__';
+  var imageMapPromise = null;
+
+  // Đọc anh.csv (KHÔNG bắt buộc). Thiếu file thì trả về bảng rỗng, không báo lỗi.
+  function loadImageMap() {
+    return fetch('anh.csv?v=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('no map');
+        return r.text();
+      })
+      .then(function (text) {
+        var map = {};
+        parseCsv(text).forEach(function (r) {
+          var ten = String(r[0] || '').trim();
+          var file = String(r[1] || '').trim();
+          if (!ten || !file) return;
+          // Dòng tiêu đề: cột 2 không phải tên file ảnh
+          if (!/\.(jpg|jpeg|png|webp|gif|avif)$/i.test(file)) return;
+          // Dòng "_mặc định" (hoặc "_default"): ảnh dùng chung
+          if (ten.charAt(0) === '_') map[DEFAULT_KEY] = file;
+          else map[slugName(ten)] = file;
+        });
+        return map;
+      })
+      .catch(function () { return {}; });
+  }
+
+  function ensureImageMap() {
+    if (!imageMapPromise) imageMapPromise = loadImageMap();
+    return imageMapPromise;
+  }
+
+  // Tên file trong anh.csv có thể là đường dẫn tuyệt đối hoặc URL đầy đủ
+  function resolveSrc(file) {
+    if (/^https?:\/\//i.test(file) || file.charAt(0) === '/') return file;
+    return IMG_DIR + file;
+  }
+
+  // Thứ tự tìm ảnh cho đơn vị hạng nhất:
+  //   1. Khai báo trong anh.csv   2. Đoán theo tên file   3. Ảnh mặc định
+  function heroCandidates(map, name) {
+    var list = [];
+    var slug = slugName(name);
+    if (map[slug]) list.push(resolveSrc(map[slug]));
+    else if (slug) list.push(IMG_DIR + slug + '.jpg');
+    if (map[DEFAULT_KEY]) list.push(resolveSrc(map[DEFAULT_KEY]));
+    return list;
+  }
+
+  // Thử tải lần lượt, ảnh nào tải được trước thì dùng. Không có ảnh nào thì
+  // giữ nguyên nền gradient — KHÔNG bao giờ hiện biểu tượng ảnh vỡ.
+  function applyHeroImage(name) {
+    ensureImageMap().then(function (map) {
+      var list = heroCandidates(map, name);
+      (function tryNext(i) {
+        if (i >= list.length) return;
+        var probe = new Image();
+        probe.onload = function () {
+          $('hero-bg').style.backgroundImage = 'url("' + list[i].replace(/"/g, '%22') + '")';
+          $('podium-hero').classList.add('has-img');
+          $('hero-credit').textContent = '🏞 Ảnh: ' + name;
+          $('hero-credit').hidden = false;
+        };
+        probe.onerror = function () { tryNext(i + 1); };
+        probe.src = list[i];
+      })(0);
+    });
+  }
+
+  // =========================================================================
+  // 3. HIỂN THỊ
+  // =========================================================================
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Number(n || 0).toLocaleString('vi-VN'); };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  // 'YYYY-MM-DD' -> 'dd/mm/yyyy' (giữ nguyên nếu đã ở dạng khác)
+  function viDate(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s).trim());
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : String(s || '');
+  }
+
+  var DATA = null;
+  var LABEL_MAIN = 'Lượt xem';
+
+  function render(data, updatedText) {
+    DATA = data;
+    LABEL_MAIN = data.mode === MODE_RANGE ? 'Tăng trong kỳ' : 'Lượt xem';
+
+    // Luôn xếp giảm dần theo chỉ số chính, không phụ thuộc thứ tự dòng trong file
+    data.items.sort(function (a, b) {
+      return b.value - a.value || a.name.localeCompare(b.name, 'vi');
+    });
+    data.items.forEach(function (x, i) { x.rank = i + 1; });
+
+    // --- Khoảng thời gian + thời điểm cập nhật ---
+    if (data.from && data.to) {
+      $('lp-range').textContent = data.from === data.to
+        ? '📅 Ngày ' + viDate(data.from)
+        : '📅 Từ ' + viDate(data.from) + ' đến ' + viDate(data.to);
+      $('lp-range').hidden = false;
+    } else {
+      $('lp-range').hidden = true;
+    }
+    $('lp-updated').textContent = updatedText || '';
+    $('lp-meta').hidden = !(data.from && data.to) && !updatedText;
+    if (!$('lp-sub').textContent.trim()) $('lp-sub').hidden = true;
+
+    renderStats(data);
+    renderPodium(data);
+    renderChart(data);
+    renderSortOptions(data);
+    renderHead(data);
+    applyFilter();
+
+    $('foot-note').innerHTML =
+      'Số liệu tổng hợp từ hệ thống giám sát chiến dịch truyền thông.' +
+      (data.mode === MODE_RANGE
+        ? '<br>"' + esc(LABEL_MAIN) + '" là số lượt xem tăng thêm trong khoảng thời gian nêu trên.'
+        : '');
+
+    $('state-loading').hidden = true;
+    $('state-error').hidden = true;
+    $('content').hidden = false;
+  }
+
+  function renderStats(data) {
+    var sumMain = data.items.reduce(function (s, x) { return s + x.value; }, 0);
+    var html =
+      '<div class="stat hl"><div class="lbl">' + esc(LABEL_MAIN) + '</div><div class="val">' + fmt(sumMain) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Số đơn vị</div><div class="val">' + fmt(data.items.length) + '</div></div>';
+
+    if (data.mode === MODE_RANGE) {
+      var sumTotal = data.items.reduce(function (s, x) { return s + (x.total || 0); }, 0);
+      html += '<div class="stat"><div class="lbl">Lũy kế cuối kỳ</div><div class="val">' + fmt(sumTotal) + '</div></div>';
+    }
+    $('stats').innerHTML = html;
+  }
+
+  function renderPodium(data) {
+    var top = data.items.slice(0, 3);
+    if (top.length < 3) { $('podium-wrap').hidden = true; return; }
+    $('podium-wrap').hidden = false;
+
+    var MEDAL = ['🥇', '🥈', '🥉'];
+    // DOM luôn theo đúng thứ hạng 1 - 2 - 3 (tốt cho trình đọc màn hình và bản
+    // in). Việc đưa hạng nhất ra GIỮA trên màn hình rộng do CSS `order` lo —
+    // nhờ vậy bố cục tự đổi khi người xem thu/phóng cửa sổ.
+    $('podium').innerHTML = [0, 1, 2].map(function (i) {
+      var x = top[i];
+      return '<div class="pod pod-' + (i + 1) + '">' +
+        '<div class="medal">' + MEDAL[i] + '</div>' +
+        '<div class="nm">' + esc(x.name) + '</div>' +
+        '<div class="vl">' + fmt(x.value) + '</div>' +
+        '<div class="unit">' + esc(LABEL_MAIN) + '</div>' +
+        '</div>';
+    }).join('');
+
+    // Nền của khối = ảnh địa phương đang hạng nhất (nếu có)
+    applyHeroImage(top[0].name);
+  }
+
+  function renderChart(data) {
+    var top = data.items.slice(0, 10);
+    var max = top.length ? Math.max.apply(null, top.map(function (x) { return x.value; })) : 0;
+    $('chart-title').textContent = '📊 Tốp ' + top.length + ' theo ' + LABEL_MAIN.toLowerCase();
+
+    $('chart').innerHTML = top.map(function (x) {
+      var pct = max > 0 ? Math.max(1.5, (x.value / max) * 100) : 1.5;
+      return '<div class="bar-row">' +
+        '<div class="bar-rank">' + x.rank + '</div>' +
+        '<div class="bar-main">' +
+          '<div class="bar-head">' +
+            '<span class="bar-name">' + esc(x.name) + '</span>' +
+            '<span class="bar-val">' + fmt(x.value) + '</span>' +
+          '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct.toFixed(2) + '%"></div></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderSortOptions(data) {
+    var opts = [
+      ['value-desc', LABEL_MAIN + ' (cao → thấp)'],
+      ['value-asc',  LABEL_MAIN + ' (thấp → cao)']
+    ];
+    if (data.mode === MODE_RANGE) {
+      opts.push(['total-desc', 'Lũy kế cuối kỳ (cao → thấp)']);
+    }
+    opts.push(['name-asc', 'Tên (A → Z)']);
+    $('sort').innerHTML = opts.map(function (o) {
+      return '<option value="' + o[0] + '">' + esc(o[1]) + '</option>';
+    }).join('');
+  }
+
+  function renderHead(data) {
+    var cols = '<th class="col-rank">#</th><th>Đơn vị / Chiến dịch</th>' +
+               '<th class="num">' + esc(LABEL_MAIN) + '</th>';
+    if (data.mode === MODE_RANGE) {
+      cols += '<th class="num col-hide-sm">Lũy kế</th>' +
+              '<th class="num col-hide-sm">Số link</th>' +
+              '<th class="num col-hide-sm" title="Số ngày có dữ liệu giám sát trong kỳ">Ngày</th>';
+    }
+    $('thead-row').innerHTML = cols;
+  }
+
+  function applyFilter() {
+    if (!DATA) return;
+    // Tách từ khóa rồi đòi hỏi CÓ ĐỦ mọi từ, thay vì khớp nguyên cụm. Nhờ vậy
+    // tìm được cả khi tên có dấu câu xen giữa ("Xã A, huyện B") hoặc khi người
+    // dùng gõ thiếu/đảo thứ tự từ. norm() đã bỏ dấu nên gõ không dấu vẫn ra.
+    var terms = norm($('q').value).split(/\s+/).filter(Boolean);
+    var list = DATA.items.filter(function (x) {
+      if (terms.length === 0) return true;
+      var n = norm(x.name);
+      return terms.every(function (t) { return n.indexOf(t) >= 0; });
+    });
+
+    var s = $('sort').value;
+    if (s === 'value-asc')       list.sort(function (a, b) { return a.value - b.value; });
+    else if (s === 'total-desc') list.sort(function (a, b) { return (b.total || 0) - (a.total || 0); });
+    else if (s === 'name-asc')   list.sort(function (a, b) { return a.name.localeCompare(b.name, 'vi'); });
+    else                         list.sort(function (a, b) { return b.value - a.value; });
+
+    $('count').textContent = terms.length
+      ? 'Tìm thấy ' + list.length + ' / ' + DATA.items.length + ' đơn vị'
+      : DATA.items.length + ' đơn vị';
+
+    if (list.length === 0) {
+      var span = DATA.mode === MODE_RANGE ? 6 : 3;
+      $('tbody').innerHTML = '<tr><td class="no-result" colspan="' + span + '">Không tìm thấy đơn vị nào khớp từ khóa.</td></tr>';
+      return;
+    }
+
+    $('tbody').innerHTML = list.map(function (x) {
+      var cls = x.rank <= 3 ? ' class="top-' + x.rank + '"' : '';
+      var row = '<tr' + cls + '>' +
+        '<td class="col-rank"><span class="rank-pill">' + x.rank + '</span></td>' +
+        '<td class="col-name">' + esc(x.name) + '</td>' +
+        '<td class="num num-main">' + fmt(x.value) + '</td>';
+      if (DATA.mode === MODE_RANGE) {
+        row += '<td class="num col-hide-sm">' + fmt(x.total) + '</td>' +
+               '<td class="num num-dim col-hide-sm">' + (x.links === null ? '—' : fmt(x.links)) + '</td>' +
+               '<td class="num num-dim col-hide-sm">' + (x.days === null ? '—' : x.days) + '</td>';
+      }
+      return row + '</tr>';
+    }).join('');
+  }
+
+  function showError(title, msg) {
+    $('state-loading').hidden = true;
+    $('content').hidden = true;
+    $('state-error').hidden = false;
+    $('err-title').textContent = title;
+    $('err-msg').innerHTML = msg;
+  }
+
+  // =========================================================================
+  // 4. NẠP DỮ LIỆU
+  //    Ưu tiên: dữ liệu nhúng sẵn (bản xem thử) -> file data.csv cùng thư mục
+  //             -> khung kéo-thả (khi mở bằng file:// hoặc thiếu data.csv)
+  // =========================================================================
+
+  function loadFromText(text, updatedText) {
+    try {
+      render(buildData(parseCsv(text)), updatedText);
+    } catch (err) {
+      showError('Không đọc được số liệu', esc(err.message));
+    }
+  }
+
+  function boot() {
+    var embedded = ($('embedded-csv').textContent || '').trim();
+    if (embedded && embedded.indexOf('__EMBEDDED') !== 0) {
+      // Backend đã ngắt chuỗi "</" thành "<\/" để dữ liệu không đóng sớm
+      // thẻ script; nối lại trước khi đọc để tên hiển thị đúng nguyên bản.
+      loadFromText(embedded.replace(/<\\\//g, '</'), 'Bản xem thử');
+      return;
+    }
+
+    if (location.protocol === 'file:') {
+      showError('Cần chạy qua HTTP',
+        'Trang đang được mở trực tiếp từ ổ đĩa nên trình duyệt chặn việc đọc file <code>data.csv</code>. ' +
+        'Khi upload lên hosting, trang sẽ tự đọc số liệu. Còn để xem thử ngay bây giờ, hãy chọn file CSV bên dưới.');
+      return;
+    }
+
+    // Thêm tham số thời gian để trình duyệt không dùng lại bản data.csv cũ
+    fetch('data.csv?v=' + Date.now(), { cache: 'no-store' })
+      .then(function (resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var lm = resp.headers.get('Last-Modified');
+        var upd = '';
+        if (lm) {
+          var d = new Date(lm);
+          if (!isNaN(d.getTime())) {
+            upd = 'Số liệu cập nhật: ' + d.toLocaleString('vi-VN', {
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            });
+          }
+        }
+        return resp.text().then(function (t) { loadFromText(t, upd); });
+      })
+      .catch(function () {
+        showError('Chưa có file số liệu',
+          'Không tìm thấy (hoặc không đọc được) file <code>data.csv</code> trong cùng thư mục với trang này. ' +
+          'Hãy tải <code>data.csv</code> từ dashboard và upload vào đúng thư mục này.');
+      });
+  }
+
+  // --- Kéo-thả / chọn file thủ công ---
+  var dz = $('dropzone'), fi = $('file-input');
+
+  dz.addEventListener('click', function () { fi.click(); });
+  fi.addEventListener('change', function () {
+    if (fi.files && fi.files[0]) readFile(fi.files[0]);
+  });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add('over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('over'); });
+  });
+  dz.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+  // Chặn trình duyệt mở thẳng file khi thả trượt ra ngoài khung
+  ['dragover', 'drop'].forEach(function (ev) {
+    window.addEventListener(ev, function (e) { e.preventDefault(); });
+  });
+
+  function readFile(file) {
+    var fr = new FileReader();
+    fr.onload = function () { loadFromText(String(fr.result), 'Xem thử từ file: ' + file.name); };
+    fr.onerror = function () { showError('Không đọc được file', 'Vui lòng thử lại với file CSV khác.'); };
+    fr.readAsText(file, 'utf-8');
+  }
+
+  $('q').addEventListener('input', applyFilter);
+  $('sort').addEventListener('change', applyFilter);
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  boot();
+})();
+</script>
+
+</body>
+</html>
